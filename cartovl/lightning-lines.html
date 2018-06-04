@@ -4,9 +4,9 @@
     <title>Lightning</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <script src="https://cartodb-libs.global.ssl.fastly.net/carto-vl/v0.3.0/carto-vl.js"></script>
-    <script src="https://cartodb-libs.global.ssl.fastly.net/mapbox-gl/v0.45.0-carto1/mapbox-gl.js"></script>
-    <link href="https://cartodb-libs.global.ssl.fastly.net/mapbox-gl/v0.45.0-carto1/mapbox-gl.css" rel="stylesheet" />
+    <script src="https://libs.cartocdn.com/carto-vl/v0.4.0/carto-vl.js"></script>
+    <script src="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.js"></script>
+    <link href="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.css" rel="stylesheet" />
     <style type="text/css">
      body {
        margin: 0;
@@ -43,6 +43,7 @@
        new carto.Viz(`
 color: ramp(linear($mcg, 360, 0), ORYEL)
 width: ramp(linear($mcg, 0, 360), [8, 7, 6, 5, 4, 3])
+strokeWidth: 0
 filter: torque($timestamp, 50, fade(0, 0.5))
        `));
 
@@ -60,6 +61,7 @@ filter: torque($timestamp, 50, fade(0, 0.5))
        new carto.source.Dataset('lightning_1528056919_sta'),
        new carto.Viz(`
 color: #d1eeea20
+strokeWidth: 0
 width: 2
        `));
 
