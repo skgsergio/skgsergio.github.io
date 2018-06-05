@@ -37,30 +37,34 @@
        apiKey: '8UvSIPPw9mrzCk1wD_DRtA'
      });
 
+     const station_color = '#d1eeea'
+     const animation_duration = 60
+     const fade_expression = 'fade(0, 0.5)'
+
      const lightnings_layer = new carto.Layer(
        'lightnings_layer',
        new carto.source.Dataset('lightning_1528056919_points'),
        new carto.Viz(`
-color: ramp(linear($mcg, 360, 0), ORYEL)
-width: ramp(linear($mcg, 0, 360), [8, 7, 6, 5, 4, 3])
+color: ramp(linear($mcg, 0, 360), ORYEL)
+width: ramp(linear($mcg, 360, 0), [8, 7, 6, 5, 4, 3])
 strokeWidth: 0
-filter: torque($timestamp, 50, fade(0, 0.5))
+filter: torque($timestamp, ${animation_duration}, ${fade_expression})
        `));
 
      const lines_layer = new carto.Layer(
        'lines_layer',
        new carto.source.Dataset('lightning_1528056919_lines'),
        new carto.Viz(`
-color: #d1eeea06
+color: opacity(${station_color}, 0.025)
 width: 1
-filter: torque($timestamp, 50, fade(0, 0.5))
+filter: torque($timestamp, ${animation_duration}, ${fade_expression})
        `));
 
      const stations_layer = new carto.Layer(
        'stations_layer',
        new carto.source.Dataset('lightning_1528056919_sta'),
        new carto.Viz(`
-color: #d1eeea20
+color: opacity(${station_color}, 0.075)
 strokeWidth: 0
 width: 2
        `));
