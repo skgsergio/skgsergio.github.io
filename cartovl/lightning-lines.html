@@ -4,22 +4,61 @@
     <title>Lightning</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <script src="https://libs.cartocdn.com/carto-vl/v0.4.0/carto-vl.js"></script>
+    <script src="https://libs.cartocdn.com/carto-vl/v0.5.0-beta/carto-vl.js"></script>
     <script src="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.js"></script>
     <link href="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
     <style type="text/css">
-     body {
+     * {
        margin: 0;
        padding: 0;
      }
+     body {
+       display: flex;
+       height: 100vh;
+     }
+     #sidebar {
+       padding: 25px;
+       width: 250px;
+     }
+     #sidebar h1 {
+       font: 100 42px/1.4 'Roboto';
+       margin-bottom: 10px;
+     }
+     #sidebar h2 {
+       font: 200 21px/1.4 'Roboto';
+       margin-bottom: 10px;
+     }
+     #sidebar p {
+       font: 300 14px/1.6 'Roboto';
+       margin-bottom: 20px;
+     }
+     #sidebar p input {
+       margin-right: 5px;
+     }
      #map {
-       position: absolute;
-       height: 100%;
-       width: 100%;
+       flex: 1;
      }
     </style>
   </head>
   <body>
+    <div id="sidebar">
+      <h1>Lighting Map</h1>
+      <p>
+        This map shows the lightnings detected worldwide by the Blitzortung.org project between 22:15 and 22:38 of the 3th of June (UTC).
+      </p>
+      <p>
+        Each point represents lightning and its size and colour tells us the precision of its calculated location. The location of each lightning is determined by triangultion from the stations that detected it.
+      </p>
+      <h2>Date</h2>
+      <p id="date"></p>
+      <h2>Layers</h2>
+      <p>
+        <input type="checkbox" id="chk-lines" checked>Show lines<br />
+        <input type="checkbox" id="chk-stations" checked>Show stations
+      </p>
+    </div>
+
     <div id="map"></div>
 
     <script type="text/javascript">
@@ -30,7 +69,7 @@
        zoom: 2,
        dragRotate: false
      });
-     map.addControl(new mapboxgl.NavigationControl({showCompass: false}));
+     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
 
      carto.setDefaultAuth({
        user: 'sconde-carto',
@@ -46,7 +85,7 @@
        new carto.source.Dataset('lightning_1528056919_points'),
        new carto.Viz(`
 color: ramp(linear($mcg, 0, 360), ORYEL)
-width: ramp(linear($mcg, 360, 0), [8, 7, 6, 5, 4, 3])
+width: ramp(linear($mcg, 360, 0), [9, 8, 7, 6, 5, 4, 3])
 strokeWidth: 0
 filter: torque($timestamp, ${animation_duration}, ${fade_expression})
        `));
@@ -55,23 +94,41 @@ filter: torque($timestamp, ${animation_duration}, ${fade_expression})
        'lines_layer',
        new carto.source.Dataset('lightning_1528056919_lines'),
        new carto.Viz(`
+@visible: true
 color: opacity(${station_color}, 0.025)
 width: 1
-filter: torque($timestamp, ${animation_duration}, ${fade_expression})
+filter: torque($timestamp, ${animation_duration}, ${fade_expression}) and @visible
        `));
 
      const stations_layer = new carto.Layer(
        'stations_layer',
        new carto.source.Dataset('lightning_1528056919_sta'),
        new carto.Viz(`
+@visible: true
 color: opacity(${station_color}, 0.075)
 strokeWidth: 0
 width: 2
+filter: @visible
        `));
 
      lines_layer.addTo(map);
      stations_layer.addTo(map);
      lightnings_layer.addTo(map);
+
+     const chk_lines = document.getElementById('chk-lines');
+     chk_lines.onclick = () => {
+       lines_layer._viz.variables.visible = (chk_lines.checked) ? 1 : 0;
+     }
+
+     const chk_stations = document.getElementById('chk-stations');
+     chk_stations.onclick = () => {
+       stations_layer._viz.variables.visible = (chk_stations.checked) ? 1 : 0;
+     }
+
+     const date_p = document.getElementById('date');
+     lightnings_layer.on('updated', () => {
+       date_p.innerHTML = lightnings_layer._viz.filter.getSimTime().toUTCString();
+     })
     </script>
   </body>
 </html>
