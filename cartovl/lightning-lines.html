@@ -54,8 +54,8 @@
       <p id="date"></p>
       <h2>Layers</h2>
       <p>
-        <input type="checkbox" id="chk-lines" checked>Show lines<br />
-        <input type="checkbox" id="chk-stations" checked>Show stations
+        <input type="checkbox" id="chk-lines" checked>Station-Lighting lines<br />
+        <input type="checkbox" id="chk-stations" checked>Stations
       </p>
     </div>
 
@@ -91,7 +91,7 @@
        new carto.source.Dataset('lightning_1528056919_points'),
        new carto.Viz(`
 color: ramp(linear($mcg), ${lightnings_palette})
-width: ramp(linear($mcg), [3, 4, 5, 6, 7, 8, 9])
+width: ramp(linear($mcg), [3, 4, 5, 6, 7, 8])
 strokeWidth: 0
 filter: torque($timestamp, ${animation_duration}, fade(0, ${fadeout_time}))
        `));
