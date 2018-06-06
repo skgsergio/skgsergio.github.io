@@ -68,7 +68,7 @@
      const animation_duration = 60;
      const fadeout_time = '0.5';
      const lines_visible = true;
-     const stations_visible = true;
+     const stations_visible = false;
 
      /*** BEGIN MAGIC  ***/
      const map = new mapboxgl.Map({
@@ -111,7 +111,7 @@ filter: torque($timestamp, ${animation_duration}, fade(0, ${fadeout_time})) and 
        new carto.source.Dataset('lightning_1528056919_sta'),
        new carto.Viz(`
 @visible: ${stations_visible}
-color: opacity(${detection_color}, 0.075)
+color: opacity(${detection_color}, 0.2)
 strokeWidth: 0
 width: 2
 filter: @visible
