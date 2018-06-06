@@ -62,6 +62,15 @@
     <div id="map"></div>
 
     <script type="text/javascript">
+     /*** BEGIN CONFIG ***/
+     const lightnings_palette = 'ORYEL';
+     const detection_color = '#d1eeea';
+     const animation_duration = 60;
+     const fadeout_time = '0.5';
+     const lines_visible = true;
+     const stations_visible = true;
+
+     /*** BEGIN MAGIC  ***/
      const map = new mapboxgl.Map({
        container: 'map',
        style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
@@ -69,6 +78,7 @@
        zoom: 2,
        dragRotate: false
      });
+
      map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
 
      carto.setDefaultAuth({
@@ -76,36 +86,32 @@
        apiKey: '8UvSIPPw9mrzCk1wD_DRtA'
      });
 
-     const station_color = '#d1eeea'
-     const animation_duration = 60
-     const fade_expression = 'fade(0, 0.5)'
-
      const lightnings_layer = new carto.Layer(
        'lightnings_layer',
        new carto.source.Dataset('lightning_1528056919_points'),
        new carto.Viz(`
-color: ramp(linear($mcg, 0, 360), ORYEL)
+color: ramp(linear($mcg, 0, 360), ${lightnings_palette})
 width: ramp(linear($mcg, 360, 0), [9, 8, 7, 6, 5, 4, 3])
 strokeWidth: 0
-filter: torque($timestamp, ${animation_duration}, ${fade_expression})
+filter: torque($timestamp, ${animation_duration}, fade(0, ${fadeout_time}))
        `));
 
      const lines_layer = new carto.Layer(
        'lines_layer',
        new carto.source.Dataset('lightning_1528056919_lines'),
        new carto.Viz(`
-@visible: true
-color: opacity(${station_color}, 0.025)
+@visible: ${lines_visible}
+color: opacity(${detection_color}, 0.025)
 width: 1
-filter: torque($timestamp, ${animation_duration}, ${fade_expression}) and @visible
+filter: torque($timestamp, ${animation_duration}, fade(0, ${fadeout_time})) and @visible
        `));
 
      const stations_layer = new carto.Layer(
        'stations_layer',
        new carto.source.Dataset('lightning_1528056919_sta'),
        new carto.Viz(`
-@visible: true
-color: opacity(${station_color}, 0.075)
+@visible: ${stations_visible}
+color: opacity(${detection_color}, 0.075)
 strokeWidth: 0
 width: 2
 filter: @visible
@@ -116,11 +122,13 @@ filter: @visible
      lightnings_layer.addTo(map);
 
      const chk_lines = document.getElementById('chk-lines');
+     chk_lines.checked = lines_visible;
      chk_lines.onclick = () => {
        lines_layer._viz.variables.visible = (chk_lines.checked) ? 1 : 0;
      }
 
      const chk_stations = document.getElementById('chk-stations');
+     chk_stations.checked = stations_visible;
      chk_stations.onclick = () => {
        stations_layer._viz.variables.visible = (chk_stations.checked) ? 1 : 0;
      }
