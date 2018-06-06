@@ -90,8 +90,8 @@
        'lightnings_layer',
        new carto.source.Dataset('lightning_1528056919_points'),
        new carto.Viz(`
-color: ramp(linear($mcg, 0, 360), ${lightnings_palette})
-width: ramp(linear($mcg, 360, 0), [9, 8, 7, 6, 5, 4, 3])
+color: ramp(linear($mcg), ${lightnings_palette})
+width: ramp(linear($mcg), [3, 4, 5, 6, 7, 8, 9])
 strokeWidth: 0
 filter: torque($timestamp, ${animation_duration}, fade(0, ${fadeout_time}))
        `));
