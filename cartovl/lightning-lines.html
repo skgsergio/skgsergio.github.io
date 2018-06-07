@@ -55,12 +55,12 @@
       <p id="date"></p>
       <h2>Animation duration</h2>
       <p>
-        <input type="range" id="rng-duration" min="60" max="180" step="10"> <span id="duration"></span> seconds.
+        <input type="range" id="rng-duration" min="60" max="300" step="10"> <span id="duration"></span> seconds
       </p>
       <h2>Layers</h2>
       <p>
-        <input type="checkbox" id="chk-lines" checked>Station-Lightning lines<br />
-        <input type="checkbox" id="chk-stations" checked>Stations
+        <input type="checkbox" id="chk-lines">Station-Lightning lines<br />
+        <input type="checkbox" id="chk-stations">Stations
       </p>
     </div>
 
@@ -128,17 +128,17 @@ filter: @visible
      stations_layer.addTo(map);
      lightnings_layer.addTo(map);
 
-     const chk_lines = document.getElementById('chk-lines');
-     chk_lines.checked = lines_visible;
-     chk_lines.onclick = () => {
-       lines_layer._viz.variables.visible = (chk_lines.checked) ? 1 : 0;
-     }
-
      const rng_duration = document.getElementById('rng-duration');
      const span_duration = document.getElementById('duration');
      rng_duration.value = span_duration.innerHTML = animation_duration;
      rng_duration.onchange = () => {
        lightnings_layer._viz.variables.duration = lines_layer._viz.variables.duration = span_duration.innerHTML = parseInt(rng_duration.value, 10);
+     }
+
+     const chk_lines = document.getElementById('chk-lines');
+     chk_lines.checked = lines_visible;
+     chk_lines.onclick = () => {
+       lines_layer._viz.variables.visible = (chk_lines.checked) ? 1 : 0;
      }
 
      const chk_stations = document.getElementById('chk-stations');
