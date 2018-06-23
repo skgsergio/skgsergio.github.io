@@ -151,21 +151,6 @@ filter: @visible
      lightnings_layer.on('updated', () => {
        date_p.innerHTML = lightnings_layer._viz.filter.getSimTime().toUTCString();
      });
-
-     /* Hack v0.5.0-beta.3 bug */
-     lightnings_layer.on('loaded', () => {
-       new Promise(() => setTimeout(() => {
-         lightnings_layer._viz.filter.setSimProgress(0);
-         lines_layer._viz.filter.a.setSimProgress(0);
-       }, 1000));
-     });
-
-     lines_layer.on('loaded', () => {
-       new Promise(() => setTimeout(() => {
-         lightnings_layer._viz.filter.setSimProgress(0);
-         lines_layer._viz.filter.a.setSimProgress(0);
-       }, 1000));
-     });
     </script>
   </body>
 </html>
