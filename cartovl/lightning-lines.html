@@ -4,7 +4,7 @@
     <title>Lightning</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <script src="https://libs.cartocdn.com/carto-vl/v0.5.1/carto-vl.js"></script>
+    <script src="https://libs.cartocdn.com/carto-vl/v0.5.3/carto-vl.js"></script>
     <script src="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.js"></script>
     <link href="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
@@ -150,21 +150,6 @@ filter: @visible
      const date_p = document.getElementById('date');
      lightnings_layer.on('updated', () => {
        date_p.innerHTML = lightnings_layer._viz.filter.getSimTime().toUTCString();
-     });
-
-     /* Hack v0.5.0-beta.3 bug */
-     lightnings_layer.on('loaded', () => {
-       new Promise(() => setTimeout(() => {
-         lightnings_layer._viz.filter.setSimProgress(0);
-         lines_layer._viz.filter.a.setSimProgress(0);
-       }, 1000));
-     });
-
-     lines_layer.on('loaded', () => {
-       new Promise(() => setTimeout(() => {
-         lightnings_layer._viz.filter.setSimProgress(0);
-         lines_layer._viz.filter.a.setSimProgress(0);
-       }, 1000));
      });
     </script>
   </body>
