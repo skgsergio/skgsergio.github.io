@@ -4,7 +4,7 @@
     <title>Lightning</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <script src="https://libs.cartocdn.com/carto-vl/v0.5.3/carto-vl.js"></script>
+    <script src="https://libs.cartocdn.com/carto-vl/v0.6.2/carto-vl.js"></script>
     <script src="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.js"></script>
     <link href="https://libs.cartocdn.com/mapbox-gl/v0.45.0-carto1/mapbox-gl.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
@@ -99,7 +99,7 @@
 color: ramp(linear($mcg), ${lightnings_palette})
 width: ramp(linear($mcg), [3, 4, 5, 6, 7, 8])
 strokeWidth: 0
-filter: torque($timestamp, @duration, fade(0, ${fadeout_time}))
+filter: animation($timestamp, @duration, fade(0, ${fadeout_time}))
        `));
 
      const lines_layer = new carto.Layer(
@@ -110,7 +110,7 @@ filter: torque($timestamp, @duration, fade(0, ${fadeout_time}))
 @visible: ${lines_visible}
 color: opacity(${detection_color}, 0.035)
 width: 1
-filter: torque($timestamp, @duration, fade(0, ${fadeout_time})) and @visible
+filter: animation($timestamp, @duration, fade(0, ${fadeout_time})) and @visible
        `));
 
      const stations_layer = new carto.Layer(
@@ -149,7 +149,7 @@ filter: @visible
 
      const date_p = document.getElementById('date');
      lightnings_layer.on('updated', () => {
-       date_p.innerHTML = lightnings_layer._viz.filter.getSimTime().toUTCString();
+       date_p.innerHTML = lightnings_layer._viz.filter.getProgressValue().toUTCString();
      });
     </script>
   </body>
