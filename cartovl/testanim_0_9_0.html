@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>BREAK ALL THE ANIMS!!!1!!11</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <script src="https://libs.cartocdn.com/carto-vl/v0.9.0/carto-vl.js"></script>
+    <script src="https://libs.cartocdn.com/mapbox-gl/v0.48.0-carto1/mapbox-gl.js"></script>
+    <link href="https://libs.cartocdn.com/mapbox-gl/v0.48.0-carto1/mapbox-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
+    <style type="text/css">
+     * {
+       margin: 0;
+       padding: 0;
+     }
+     body {
+       height: 100vh;
+     }
+     #map {
+       height: 100%;
+     }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+
+    <script type="text/javascript">
+     const palette = 'ORYEL';
+     const det_color = '#d1eeea';
+     const det_lines_opacty = 0.25;
+     const det_points_opacty = 0.5;
+     const animation_duration = 5;
+     const fadeout_time = 0.75;
+
+     const map = new mapboxgl.Map({
+       container: 'map',
+       style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+       center: [0, 0],
+       zoom: 1,
+       dragRotate: false
+     });
+
+     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
+
+     carto.setDefaultAuth({
+       user: 'sconde-carto',
+       apiKey: 'default_public'
+     });
+
+     const testanim_dynamic_points_layer = new carto.Layer(
+       'testanim_dynamic_points',
+       new carto.source.Dataset('testanim_dynamic_points'),
+       new carto.Viz(`
+        color: ramp(linear($dets), ${palette})
+        width: ramp(linear($dets), [3, 4, 5, 6, 7])
+        strokeWidth: 0
+        filter: animation($ts, ${animation_duration}, fade(0, ${fadeout_time}))
+       `));
+
+     const testanim_lines_layer = new carto.Layer(
+       'testanim_lines',
+       new carto.source.Dataset('testanim_lines'),
+       new carto.Viz(`
+        color: opacity(${det_color}, 0.25)
+        width: 1
+        filter: animation($ts, ${animation_duration}, fade(0, ${fadeout_time}))
+       `));
+
+     const testanim_static_points_layer = new carto.Layer(
+       'testanim_static_points',
+       new carto.source.Dataset('testanim_static_points'),
+       new carto.Viz(`
+        color: opacity(${det_color}, 0.5)
+        width: 2
+        strokeWidth: 0
+       `));
+
+     testanim_lines_layer.addTo(map);
+     testanim_static_points_layer.addTo(map);
+     testanim_dynamic_points_layer.addTo(map);
+    </script>
+  </body>
+</html>
