@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Lightning</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <script src="https://libs.cartocdn.com/carto-vl/v0.10.0/carto-vl.min.js"></script>
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.50.0/mapbox-gl.css' rel='stylesheet' />
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400" rel="stylesheet">
+    <style type="text/css">
+     * {
+       margin: 0;
+       padding: 0;
+     }
+     body {
+       display: flex;
+       height: 100vh;
+     }
+     #sidebar {
+       padding: 25px;
+       width: 275px;
+       background: #f8f8f8;
+     }
+     #sidebar h1 {
+       font: 100 42px/1.4 'Roboto';
+       margin-bottom: 10px;
+     }
+     #sidebar h2 {
+       font: 200 21px/1.4 'Roboto';
+       margin-bottom: 10px;
+     }
+     #sidebar p {
+       font: 300 14px/1.6 'Roboto';
+       margin-bottom: 20px;
+     }
+     #sidebar p input {
+       margin-right: 5px;
+     }
+     #map {
+       flex: 1;
+     }
+    </style>
+  </head>
+  <body>
+    <div id="sidebar">
+      <h1>Lightning Map</h1>
+      <p>
+        This map shows the lightnings detected worldwide by the <a href="http://blitzortung.org/" target="_blank">Blitzortung.org</a> project between 22:15 and 22:38 of the 3th of June (UTC).
+      </p>
+      <p>
+        Each point represents lightning and its size and colour tells us the precision of its calculated location. The location of each lightning is determined by triangulation from the stations that detected it.
+      </p>
+      <h2>Date</h2>
+      <p id="date"></p>
+      <h2>Animation duration</h2>
+      <p>
+        <input type="range" id="rng-duration" min="60" max="300" step="10"> <span id="duration"></span> seconds
+      </p>
+      <h2>Layers</h2>
+      <p>
+        <input type="checkbox" id="chk-lines">Station-Lightning lines<br />
+        <input type="checkbox" id="chk-stations">Stations
+      </p>
+    </div>
+
+    <div id="map"></div>
+
+    <script type="text/javascript">
+     /*** BEGIN CONFIG ***/
+     const lightnings_palette = 'ORYEL';
+     const detection_color = '#d1eeea';
+     const animation_duration = 120;
+     const fadeout_time = '0.75';
+     const lines_visible = true;
+     const stations_visible = false;
+
+     /*** BEGIN MAGIC  ***/
+     const map = new mapboxgl.Map({
+       container: 'map',
+       style: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+       center: [-35, 35],
+       zoom: 2,
+       dragRotate: false
+     });
+
+     map.addControl(new mapboxgl.NavigationControl({ showCompass: false }));
+
+     carto.setDefaultAuth({
+       user: 'sconde-carto',
+       apiKey: '8UvSIPPw9mrzCk1wD_DRtA'
+     });
+
+     const lightnings_layer = new carto.Layer(
+       'lightnings_layer',
+       new carto.source.Dataset('lightning_1528056919_points'),
+       new carto.Viz(`
+@duration: ${animation_duration}
+color: ramp(linear($mcg), ${lightnings_palette})
+width: ramp(linear($mcg), [3, 4, 5, 6, 7, 8])
+strokeWidth: 0
+filter: animation($timestamp, @duration, fade(0, ${fadeout_time}))
+       `));
+
+     const lines_layer = new carto.Layer(
+       'lines_layer',
+       new carto.source.Dataset('lightning_1528056919_lines'),
+       new carto.Viz(`
+@duration: ${animation_duration}
+@visible: ${lines_visible}
+color: opacity(${detection_color}, 0.035)
+width: 1
+filter: animation($timestamp, @duration, fade(0, ${fadeout_time})) and @visible
+       `));
+
+     const stations_layer = new carto.Layer(
+       'stations_layer',
+       new carto.source.Dataset('lightning_1528056919_sta'),
+       new carto.Viz(`
+@visible: ${stations_visible}
+color: opacity(${detection_color}, 0.2)
+strokeWidth: 0
+width: 2
+filter: @visible
+       `));
+
+     lines_layer.addTo(map);
+     stations_layer.addTo(map);
+     lightnings_layer.addTo(map);
+
+     const rng_duration = document.getElementById('rng-duration');
+     const span_duration = document.getElementById('duration');
+     rng_duration.value = span_duration.innerHTML = animation_duration;
+     rng_duration.onchange = () => {
+       lightnings_layer._viz.variables.duration = lines_layer._viz.variables.duration = span_duration.innerHTML = parseInt(rng_duration.value, 10);
+     }
+
+     const chk_lines = document.getElementById('chk-lines');
+     chk_lines.checked = lines_visible;
+     chk_lines.onclick = () => {
+       lines_layer._viz.variables.visible = (chk_lines.checked) ? 1 : 0;
+     }
+
+     const chk_stations = document.getElementById('chk-stations');
+     chk_stations.checked = stations_visible;
+     chk_stations.onclick = () => {
+       stations_layer._viz.variables.visible = (chk_stations.checked) ? 1 : 0;
+     }
+
+     const date_p = document.getElementById('date');
+     lightnings_layer.on('updated', () => {
+       date_p.innerHTML = lightnings_layer._viz.filter.getProgressValue().toUTCString();
+     });
+    </script>
+  </body>
+</html>
