@@ -98,9 +98,10 @@
        new carto.Viz(`
 @duration: ${animation_duration}
 color: ramp(linear($mcg), ${lightnings_palette})
-width: ramp(linear($mcg), [3, 4, 5, 6, 7, 8])
+width: ramp(linear($mcg), [8, 9, 10, 11, 12, 13])
 strokeWidth: 0
 filter: animation($timestamp, @duration, fade(0, ${fadeout_time}))
+symbol: image('lightning.svg')
        `));
 
      const lines_layer = new carto.Layer(
